@@ -1,0 +1,8 @@
+bin/terraform-provider-arukas*
+Godeps/_workspace
+Godeps/README
+plugin.log
+terraform-provider-arukas
+terraform.tfstate
+terraform.tfstate.backup
+*.tf
