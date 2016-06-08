@@ -117,7 +117,7 @@ func resourceArukasContainer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"app_ip": &schema.Schema{
+			"app_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
 			},
