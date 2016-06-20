@@ -1,124 +1,78 @@
-# terraform-provider-arukas
+# Terraform for Arukas
 
-Terraform provider for Arukas. - `Terraform for Arukas`
-
-## Installation
-
-1. Download the plugin from the [releases page](https://github.com/yamamoto-febc/terraform-provider-arukas/releases/latest)
-2. Put it in the same directory as the terraform binary. ex:`$GOPATH/bin/`.
+[Terraform](https://www.terraform.io)で[Arukas](https://arukas.io)を操作するためのTerraform providerプラグインです。
 
 
-## Usage
+## クイックスタート
 
-  - [Provider Configuration](#provider-configuration)
-  - Resource Configuration
-    - [arukas_container](#resource-configuration-arukas_container)
-  - [Samples](#samples)
+#### 前提条件
 
-## Provider Configuration
+- Dockerがインストールしておく
+- Arukas APIキーを取得しておく
 
-### Example
+Dockerがない場合は、[Wiki:インストール](https://github.com/yamamoto-febc/terraform-provider-arukas/wiki/Install)を参考にインストールを実施することでTerraform for Arukasの利用が可能です。
 
-```
-provider "arukas" {
-    token = "your API token"
-    secret = "your API secret"
-}
-```
-    
-### Argument Reference
+Arukas APIキーの取得方法は[こちら](https://github.com/yamamoto-febc/terraform-provider-arukas/wiki/Install#arukas-apiキーの取得)を参照してください。
 
-The following arguments are supported:
+以下はArukas上にNginxコンテナを立ち上げる例です。
 
-* `token` - (Required) This is the Arukas API token. This can also be specified
-  with the `ARUKAS_JSON_API_TOKEN` shell environment variable.
+```bash
+#################################################
+# Terraform定義ファイル作成
+#################################################
+$ mkdir ~/work; cd ~/work #作業用ディレクトリ
+$ tee arukas.tf <<-'EOF'
 
-* `secret` - (Required) This is the Arukas API secret. This can also be specified
-  with the `ARUKAS_JSON_API_SECRET` shell environment variable.
-
-* `api_url` - (Optional) This is the ArukasAPI root URL. This can also be specified
-  with the `ARUKAS_JSON_API_URL` shell environment variable.
-
-* `trace` - (Optional) Flag of trace mode. This can also be specified
-  with the `ARUKAS_DEBUG` shell environment variable.
-
-## Resource Configuration `arukas_container`
-
-Provides a Arukas container resource. This can be used to create, modify,
-and delete container.
-
-### Example Usage
-
-```
-resource "arukas_container" "foobar" {
-    name = "terraform_for_arukas_test_foobar"
+resource "arukas_container" "demo"{
+    name = "arukas-quick-start"
     image = "nginx:latest"
-    instances = 2
-    memory = 512
-    endpoint = "terraform-for-arukas-test-endpoint-upd"
     ports = {
         protocol = "tcp"
         number = "80"
     }
-    ports = {
-        protocol = "tcp"
-        number = "443"
-    }
-    environments {
-        key = "key"
-        value = "value"
-    }
-    environments {
-        key = "key2"
-        value = "value2"
-    }
-    cmd = "/foo/bar.sh"
 }
+
+EOF
+
+#################################################
+# Terraformでインフラ作成
+#################################################
+$ docker run -it --rm \
+         -e ARUKAS_JSON_API_TOKEN=[Arukas APIトークン] \
+         -e ARUKAS_JSON_API_SECRET=[Arukas APIシークレット] \
+         -v $PWD:/work \
+         aquarium/terraform-arukas apply
+
+#################################################
+# 確認
+#################################################
+$ docker run -it --rm \
+         -e ARUKAS_JSON_API_TOKEN=[Arukas APIトークン] \
+         -e ARUKAS_JSON_API_SECRET=[Arukas APIシークレット] \
+         -v $PWD:/work \
+         aquarium/terraform-arukas show
+
+#################################################
+# 削除
+#################################################
+$ docker run -it --rm \
+         -e ARUKAS_JSON_API_TOKEN=[Arukas APIトークン] \
+         -e ARUKAS_JSON_API_SECRET=[Arukas APIシークレット] \
+         -v $PWD:/work \
+         aquarium/terraform-arukas destroy
 ```
 
-### Argument Reference
+## インストール
 
-The following arguments are supported:
+[リリースページ](https://github.com/yamamoto-febc/terraform-provider-arukas/releases/latest)から最新のバイナリを取得し、
+Terraformバイナリと同じディレクトリに展開してください。
 
-* `name` - (Required) The name of the App.
-* `image` - (Required) The name of the DockerImage.Specify an image that exists in `https://hub.docker.com/`.
-* `instances` - (Optional) The number of the container instance. Must be between `1` and `10`. Default is `1`.
-* `memory` - (Optional) The size of the memory. Must be in [`256` , `512`]. Default is `256`.
-* `endpoint` - (Optional) The endpoint of the app.
-* `timeout` - (Optional) The number of seconds for waiting boot.Default is `300`
-* `ports` - (Required) The ports of the app.
-  * `protocol` - The protocol of the port.Must be in [`tcp` , `udp`]
-  * `number` - The number of the port. Must be between `1` and `65535`.
-* `environments` - (Optional) The description of the switch.
-  * `key` - The key of environment variable.
-  * `value` - The value of environment variable.
-* `cmd` - (Optional) The description of the switch.
+詳細は[Wiki:インストール](https://github.com/yamamoto-febc/terraform-provider-arukas/wiki/Install)を参照してください。
 
-### Attributes Reference
+## 使い方/各リソースの設定方法
 
-The following attributes are exported:
-
-* `id` - The ID of container.
-* `app_id` - The ID of app.
-* `name` - The name of the App.
-* `image` - The name of the DockerImage.Specify an image that exists in `https://hub.docker.com/`.
-* `instances` - The number of the container instance. Must be between `1` and `10`. Default is `1`.
-* `memory` - The size of the memory. Must be in [`256` , `512`]. Default is `256`.
-* `endpoint` - The endpoint of the app.
-* `ports` - The ports of the app.
-  * `protocol` - The protocol of the port.Must be in [`tcp` , `udp`]
-  * `number` - The number of the port. Must be between `1` and `65535`.
-* `environments` - The description of the switch.
-  * `key` - The key of environment variable.
-  * `value` - The value of environment variable.
-* `cmd` - The description of the switch.
-
-* `endpoint_full_hostname` - The full name of endpoint host.
-* `endpoint_full_url` - The URL of endpoint.
-* `port_mappings` - The mappings of service port.
-  * `host` -  The hostname of thr service host.
-  * `container_port` - The number of port was container exposed.
-  * `service_port` - The number of service port.
+Terraform定義ファイル(tfファイル)を作成してご利用ください。
+設定ファイルの記載方法は[Wikiページ](https://github.com/yamamoto-febc/terraform-provider-arukas/wiki)を参照ください。
 
 ## License
 

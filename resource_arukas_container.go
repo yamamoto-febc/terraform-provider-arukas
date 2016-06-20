@@ -98,6 +98,10 @@ func resourceArukasContainer() *schema.Resource {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
+						"ipaddress": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
 						"container_port": &schema.Schema{
 							Type:     schema.TypeInt,
 							Computed: true,

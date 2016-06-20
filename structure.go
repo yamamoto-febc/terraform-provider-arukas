@@ -3,6 +3,7 @@ package arukas
 import (
 	API "github.com/arukasio/cli"
 	"github.com/hashicorp/terraform/helper/schema"
+	"net"
 )
 
 // Takes the result of flatmap.Expand for an array of strings
@@ -83,7 +84,15 @@ func flattenPortMappings(ports API.PortMappings) []interface{} {
 	for _, tasks := range ports {
 		for _, port := range tasks {
 			r := map[string]interface{}{}
+			ip := ""
+
+			addrs, err := net.LookupHost(port.Host)
+			if err == nil && len(addrs) > 0 {
+				ip = addrs[0]
+			}
+
 			r["host"] = port.Host
+			r["ipaddress"] = ip
 			r["container_port"] = port.ContainerPort
 			r["service_port"] = port.ServicePort
 			ret = append(ret, r)
