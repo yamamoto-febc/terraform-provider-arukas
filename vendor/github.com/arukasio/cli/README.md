@@ -1,4 +1,4 @@
-<img src="https://arukas.io/images/logo-orca.svg" alt="" width="100" /> Arukas CLI
+<img src="https://app.arukas.io/images/logo-orca.svg" alt="" width="100" /> Arukas CLI
 ==========
 
 [![Circle CI](https://circleci.com/gh/arukasio/cli.svg?style=shield)](https://circleci.com/gh/arukasio/cli)
