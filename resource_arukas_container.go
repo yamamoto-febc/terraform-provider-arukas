@@ -154,7 +154,8 @@ func resourceArukasContainerCreate(d *schema.ResourceData, meta interface{}) err
 		Mem:       d.Get("memory").(int),
 		Instances: d.Get("instances").(int),
 		Cmd:       d.Get("cmd").(string),
-		Name:      d.Get("endpoint").(string),
+
+		Name: d.Get("endpoint").(string),
 	}
 	newAppSet := API.AppSet{
 		App:       newApp,
