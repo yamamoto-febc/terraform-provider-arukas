@@ -5,71 +5,6 @@ import (
 	"strings"
 )
 
-type cmdMixin struct {
-	*flagGroup
-	*argGroup
-	*cmdGroup
-	actionMixin
-}
-
-func (c *cmdMixin) CmdCompletion() []string {
-	rv := []string{}
-	if len(c.cmdGroup.commandOrder) > 0 {
-		// This command has subcommands. We should
-		// show these to the user.
-		for _, option := range c.cmdGroup.commandOrder {
-			rv = append(rv, option.name)
-		}
-	} else {
-		// No subcommands
-		rv = nil
-	}
-	return rv
-}
-
-func (c *cmdMixin) FlagCompletion(flagName string, flagValue string) (choices []string, flagMatch bool, optionMatch bool) {
-	// Check if flagName matches a known flag.
-	// If it does, show the options for the flag
-	// Otherwise, show all flags
-
-	options := []string{}
-
-	for _, flag := range c.flagGroup.flagOrder {
-		// Loop through each flag and determine if a match exists
-		if flag.name == flagName {
-			// User typed entire flag. Need to look for flag options.
-			options = flag.resolveCompletions()
-			if len(options) == 0 {
-				// No Options to Choose From, Assume Match.
-				return options, true, true
-			}
-
-			// Loop options to find if the user specified value matches
-			isPrefix := false
-			matched := false
-
-			for _, opt := range options {
-				if flagValue == opt {
-					matched = true
-				} else if strings.HasPrefix(opt, flagValue) {
-					isPrefix = true
-				}
-			}
-
-			// Matched Flag Directly
-			// Flag Value Not Prefixed, and Matched Directly
-			return options, true, !isPrefix && matched
-		}
-
-		if !flag.hidden {
-			options = append(options, "--"+flag.name)
-		}
-	}
-	// No Flag directly matched.
-	return options, false, false
-
-}
-
 type cmdGroup struct {
 	app          *Application
 	parent       *CmdClause
@@ -157,7 +92,10 @@ type CmdClauseValidator func(*CmdClause) error
 // A CmdClause is a single top-level command. It encapsulates a set of flags
 // and either subcommands or positional arguments.
 type CmdClause struct {
-	cmdMixin
+	actionMixin
+	*flagGroup
+	*argGroup
+	*cmdGroup
 	app       *Application
 	name      string
 	aliases   []string
@@ -169,13 +107,13 @@ type CmdClause struct {
 
 func newCommand(app *Application, name, help string) *CmdClause {
 	c := &CmdClause{
-		app:  app,
-		name: name,
-		help: help,
+		flagGroup: newFlagGroup(),
+		argGroup:  newArgGroup(),
+		cmdGroup:  newCmdGroup(app),
+		app:       app,
+		name:      name,
+		help:      help,
 	}
-	c.flagGroup = newFlagGroup()
-	c.argGroup = newArgGroup()
-	c.cmdGroup = newCmdGroup(app)
 	return c
 }
 
