@@ -6,7 +6,10 @@ import (
 )
 
 // TmpJSON Contain JSON data.
-type TmpJSON map[string][]map[string]interface{}
+type TmpJSON struct {
+	Data []map[string]interface{} `json:"data"`
+	Meta map[string]interface{}   `json:"-"`
+}
 
 // AppSet represents a application data in struct variables.
 type AppSet struct {
@@ -56,11 +59,11 @@ func (as AppSet) MarshalJSON() ([]byte, error) {
 }
 
 // SelectResources returns the type filter value of TmpJSON.
-func SelectResources(data TmpJSON, resourceType string) TmpJSON {
+func SelectResources(data TmpJSON, resourceType string) map[string][]map[string]interface{} {
 	var resources []map[string]interface{}
 	// resources := make([]map[string]interface{}, 0)
 
-	for _, v := range data["data"] {
+	for _, v := range data.Data {
 		if v["type"] == resourceType {
 			resources = append(resources, v)
 		}

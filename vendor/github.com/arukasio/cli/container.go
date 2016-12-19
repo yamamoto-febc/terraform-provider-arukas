@@ -56,7 +56,7 @@ type Container struct {
 	Instances    int    `json:"instances"`
 	IsRunning    bool   `json:"is_running,omitempty"`
 	Cmd          string `json:"cmd"`
-	Name         string `json:"arukas_domain"`
+	Name         string `json:"name"`
 	Endpoint     string `json:"end_point,omitempty"`
 }
 

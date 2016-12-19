@@ -40,7 +40,7 @@ var (
 )
 
 // Run arukas
-func Run(args []string) {
+func Run(args []string) int {
 	kingpin.CommandLine.HelpFlag.Short('h')
 	kingpin.Version(VERSION)
 	switch kingpin.MustParse(cli.Parse(args[1:])) {
@@ -57,10 +57,12 @@ func Run(args []string) {
 	case "version":
 		displayVersion()
 	}
+
+	return ExitCode
 }
 
 // RunTest arukas
-func RunTest(args []string) {
+func RunTest(args []string) int {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	logFile := "/tmp/test.log"
 	if runtime.GOOS != "windows" {
@@ -73,5 +75,5 @@ func RunTest(args []string) {
 
 		log.SetOutput(f)
 	}
-	Run(args)
+	return Run(args)
 }

@@ -1,7 +1,7 @@
 machine:
   environment:
+    GODIST: "go1.7.3.linux-amd64.tar.gz"
     GOPATH: /home/ubuntu/.go_workspace
-    GO15VENDOREXPERIMENT: 1
     ARUKAS_JSON_API_SECRET: PASSWORD
     ARUKAS_JSON_API_TOKEN: USER
     REPO_ROOT: /home/ubuntu/.go_workspace/src/github.com/arukasio/cli
@@ -10,6 +10,9 @@ dependencies:
   cache_directories:
     - /home/ubuntu/.go_workspace
   pre:
+    - if [[ ! -e /home/ubuntu/go/bin/go ]]; then cd /home/ubuntu; curl https://storage.googleapis.com/golang/${GODIST} | tar -xz; fi
+    - sudo rm -rf /usr/local/go
+    - sudo mv /home/ubuntu/go /usr/local/go
     - go get -u github.com/tools/godep
     - go get -u github.com/golang/lint/golint
   override:
