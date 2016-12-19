@@ -1,9 +1,8 @@
 package main
 
 import (
-	//"github.com/hashicorp/terraform/builtin/providers/sakuracloud"
 	"github.com/hashicorp/terraform/plugin"
-	arukas "github.com/yamamoto-febc/terraform-provider-arukas"
+	"github.com/yamamoto-febc/terraform-provider-arukas/builtin/providers/arukas"
 )
 
 func main() {
