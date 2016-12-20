@@ -3,14 +3,6 @@ package arukas
 import (
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
-	"os"
-)
-
-const (
-	JSONTokenParamName  = "ARUKAS_JSON_API_TOKEN"
-	JSONSecretParamName = "ARUKAS_JSON_API_SECRET"
-	JSONUrlParamName    = "ARUKAS_JSON_API_URL"
-	JSONDebugParamName  = "ARUKAS_DEBUG"
 )
 
 // Provider returns a terraform.ResourceProvider.
@@ -20,25 +12,30 @@ func Provider() terraform.ResourceProvider {
 			"token": &schema.Schema{
 				Type:        schema.TypeString,
 				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("ARUKAS_JSON_API_TOKEN", nil),
+				DefaultFunc: schema.EnvDefaultFunc(JSONTokenParamName, nil),
 				Description: "your Arukas APIKey(token)",
 			},
 			"secret": &schema.Schema{
 				Type:        schema.TypeString,
 				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("ARUKAS_JSON_API_SECRET", nil),
+				DefaultFunc: schema.EnvDefaultFunc(JSONSecretParamName, nil),
 				Description: "your Arukas APIKey(secret)",
 			},
 			"api_url": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("ARUKAS_JSON_API_URL", "https://app.arukas.io/api/"),
+				DefaultFunc: schema.EnvDefaultFunc(JSONUrlParamName, "https://app.arukas.io/api/"),
 				Description: "default Arukas API url",
 			},
 			"trace": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("ARUKAS_DEBUG", ""),
+			},
+			"timeout": &schema.Schema{
+				Type:        schema.TypeInt,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("ARUKAS_TIMEOUT", "600"),
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
@@ -50,12 +47,13 @@ func Provider() terraform.ResourceProvider {
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 
-	os.Setenv(JSONTokenParamName, d.Get("token").(string))
-	os.Setenv(JSONSecretParamName, d.Get("secret").(string))
-	os.Setenv(JSONUrlParamName, d.Get("api_url").(string))
-	os.Setenv(JSONDebugParamName, d.Get("trace").(string))
-
-	config := Config{}
+	config := Config{
+		Token:   d.Get("token").(string),
+		Secret:  d.Get("secret").(string),
+		URL:     d.Get("api_url").(string),
+		Trace:   d.Get("trace").(string),
+		Timeout: d.Get("timeout").(int),
+	}
 
 	return config.NewClient()
 }

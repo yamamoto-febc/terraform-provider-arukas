@@ -14,7 +14,9 @@ func resourceArukasContainer() *schema.Resource {
 		Read:   resourceArukasContainerRead,
 		Update: resourceArukasContainerUpdate,
 		Delete: resourceArukasContainerDelete,
-
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -84,11 +86,6 @@ func resourceArukasContainer() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"timeout": &schema.Schema{
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  300,
-			},
 			"port_mappings": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
@@ -130,7 +127,8 @@ func resourceArukasContainer() *schema.Resource {
 }
 
 func resourceArukasContainerCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*API.Client)
+	arukasClient := meta.(*ArukasClient)
+	client := arukasClient.Client
 
 	var appSet API.AppSet
 
@@ -172,9 +170,7 @@ func resourceArukasContainerCreate(d *schema.ResourceData, meta interface{}) err
 		return err
 	}
 
-	//wait for boot
-	timeout := time.Duration(d.Get("timeout").(int)) * time.Second
-	if err := sleepUntilUp(client, appSet.Container.ID, timeout); err != nil {
+	if err := sleepUntilUp(client, appSet.Container.ID, arukasClient.Timeout); err != nil {
 		return err
 	}
 
@@ -183,7 +179,8 @@ func resourceArukasContainerCreate(d *schema.ResourceData, meta interface{}) err
 }
 
 func resourceArukasContainerRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*API.Client)
+	arukasClient := meta.(*ArukasClient)
+	client := arukasClient.Client
 
 	var container API.Container
 	var app API.App
@@ -225,7 +222,8 @@ func resourceArukasContainerRead(d *schema.ResourceData, meta interface{}) error
 
 func resourceArukasContainerUpdate(d *schema.ResourceData, meta interface{}) error {
 
-	client := meta.(*API.Client)
+	arukasClient := meta.(*ArukasClient)
+	client := arukasClient.Client
 	var container API.Container
 
 	if err := client.Get(&container, fmt.Sprintf("/containers/%s", d.Id())); err != nil {
@@ -262,7 +260,8 @@ func resourceArukasContainerUpdate(d *schema.ResourceData, meta interface{}) err
 }
 
 func resourceArukasContainerDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*API.Client)
+	arukasClient := meta.(*ArukasClient)
+	client := arukasClient.Client
 	var container API.Container
 
 	if err := client.Get(&container, fmt.Sprintf("/containers/%s", d.Id())); err != nil {

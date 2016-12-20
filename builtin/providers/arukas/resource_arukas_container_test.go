@@ -161,6 +161,25 @@ func TestAccArukasContainer_Minimum(t *testing.T) {
 	})
 }
 
+func TestAccArukasContainer_Import(t *testing.T) {
+	resourceName := "arukas_container.foobar"
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckArukasContainerDestroy,
+		Steps: []resource.TestStep{
+			resource.TestStep{
+				Config: testAccCheckArukasContainerConfig_basic,
+			},
+			resource.TestStep{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}
+
 func testAccCheckArukasContainerExists(n string, container *API.Container) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[n]
@@ -172,8 +191,8 @@ func testAccCheckArukasContainerExists(n string, container *API.Container) resou
 		if rs.Primary.ID == "" {
 			return fmt.Errorf("No Container ID is set")
 		}
-
-		client := testAccProvider.Meta().(*API.Client)
+		arukasClient := testAccProvider.Meta().(*ArukasClient)
+		client := arukasClient.Client
 		var foundContainer API.Container
 		err := client.Get(&foundContainer, fmt.Sprintf("/containers/%s", rs.Primary.ID))
 
@@ -192,7 +211,8 @@ func testAccCheckArukasContainerExists(n string, container *API.Container) resou
 }
 
 func testAccCheckArukasContainerDestroy(s *terraform.State) error {
-	client := testAccProvider.Meta().(*API.Client)
+	arukasClient := testAccProvider.Meta().(*ArukasClient)
+	client := arukasClient.Client
 
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "arukas_container" {
