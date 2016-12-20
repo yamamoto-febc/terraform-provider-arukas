@@ -7,10 +7,9 @@
 
 #### 前提条件
 
-- Dockerがインストールしておく
 - Arukas APIキーを取得しておく
 
-Dockerがない場合は、[Wiki:インストール](https://github.com/yamamoto-febc/terraform-provider-arukas/wiki/Install)を参考にインストールを実施することでTerraform for Arukasの利用が可能です。
+Dockerがない場合は、[Wiki:インストール](https://github.com/yamamoto-febc/terraform-provider-arukas/wiki/Install)を参考にバイナリファイルをインストールすることでTerraform for Arukasの利用が可能です。
 
 Arukas APIキーの取得方法は[こちら](https://github.com/yamamoto-febc/terraform-provider-arukas/wiki/Install#arukas-apiキーの取得)を参照してください。
 
