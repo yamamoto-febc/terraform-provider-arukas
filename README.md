@@ -2,7 +2,11 @@
 
 [Terraform](https://www.terraform.io)で[Arukas](https://arukas.io)を操作するためのTerraform providerプラグインです。
 
+## 注意
 
+当プラグインは[Terraform](https://terraform.io) v0.8.3にてTerraform本体に組み込まれました。  
+今後のバグフィックスなどは[Terraform本体のリポジトリ](https://github.com/hashicorp/terraform)にて行われます。  
+      
 ## クイックスタート
 
 #### 前提条件
