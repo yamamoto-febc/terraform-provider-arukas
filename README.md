@@ -5,6 +5,9 @@
 ## 注意
 
 当プラグインは[Terraform](https://terraform.io) v0.8.7にてTerraform本体に組み込まれました。  
+
+[Terraform:Arukas provider](https://www.terraform.io/docs/providers/arukas/index.html)
+
 今後のバグフィックスなどは[Terraform本体のリポジトリ](https://github.com/hashicorp/terraform)にて行われます。  
       
 ## クイックスタート
